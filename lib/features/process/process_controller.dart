@@ -1,26 +1,38 @@
-import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
+import '../../core/models/grid_model.dart';
+import '../../core/repository/path_repository.dart';
+import '../../core/services/api_service.dart';
+
 class ProcessController extends ChangeNotifier {
   bool isProcessing = false;
-  bool navigateToNextScreen = false;
+  bool canSendToServer = false;
 
-  ProcessController();
+  final PathRepository repository;
+  List<Point>? shortestPath;
 
-  Future<void> performCalculations() async {
+  ApiService apiService;
+
+  ProcessController({required this.apiService, required this.repository});
+
+  void performCalculations() async {
     log("start proc");
     isProcessing = true;
-    navigateToNextScreen = false;
-    notifyListeners();
+    canSendToServer = false;
 
     try {
-      await Future.delayed(const Duration(seconds: 3));
+      List<Point> result = (await repository.calculateShortestPath()).cast<Point>();
+      shortestPath = result;
 
-      navigateToNextScreen = true;
+      print("SHORTEST PATH - $result");
+      log("SHORTEST PATH - $result");
+
+      /// TODO save to base
+      canSendToServer = true;
     } catch (e) {
-      debugPrint(e.toString());
+      debugPrint("Error: $e");
     } finally {
       isProcessing = false;
       notifyListeners();
@@ -29,7 +41,7 @@ class ProcessController extends ChangeNotifier {
   }
 
   void resetNavigationFlag() {
-    navigateToNextScreen = false;
+    canSendToServer = false;
     notifyListeners();
   }
 }

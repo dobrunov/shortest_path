@@ -10,7 +10,7 @@ class ApiService {
 
   ApiService({required this.dataBaseService});
 
-  Future<dynamic> getData() async {
+  Future<PathModel> getData() async {
     final url = await dataBaseService.getSavedUrl();
 
     if (url != null) {
@@ -21,21 +21,39 @@ class ApiService {
       } else {
         throw Exception('Failed to fetch tasks. Status code: ${response.statusCode}');
       }
+    } else {
+      throw Exception('URL not found in the database.');
     }
   }
 
-  Future<dynamic> putData() async {
-    // final url = await dataBaseService.getSavedUrl();
-    //
-    // if (url != null) {
-    //   final response = await http.put(Uri.parse(url));
-    //
-    //   if (response.statusCode == 200) {
-    //     return jsonDecode(response.body);
-    //   } else {
-    //     throw Exception('Failed to fetch tasks. Status code: ${response.statusCode}');
-    //   }
-    // }
+  Future<void> sendPathToServer(String id, List<Map<String, String>> steps, String path) async {
+    final url = await dataBaseService.getSavedUrl();
+
+    final payload = [
+      {
+        "id": id,
+        "result": {
+          "steps": steps,
+          "path": path,
+        }
+      }
+    ];
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(payload),
+      );
+
+      if (response.statusCode == 200) {
+        print("Success: ${response.body}");
+      } else {
+        print("Failed with status: ${response.statusCode}, body: ${response.body}");
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
   }
 
   ///

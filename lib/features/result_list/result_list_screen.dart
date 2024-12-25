@@ -9,6 +9,7 @@ class ResultListScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     List<String> results = ["Result 1", "Result 2"];
 
+    /// TODO: Get results from data base if server = ok
     return Scaffold(
       appBar: AppBar(title: const Text('Results')),
       body: ListView.builder(

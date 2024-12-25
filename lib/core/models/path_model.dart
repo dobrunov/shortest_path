@@ -1,3 +1,5 @@
+import 'grid_model.dart';
+
 class PathModel {
   final bool? error;
   final String? message;
@@ -57,30 +59,5 @@ class Datum {
   @override
   String toString() {
     return 'Datum(id: $id, field: $field, start: $start, end: $end)';
-  }
-}
-
-class End {
-  final int? x;
-  final int? y;
-
-  End({
-    this.x,
-    this.y,
-  });
-
-  factory End.fromJson(Map<String, dynamic> json) => End(
-        x: json["x"],
-        y: json["y"],
-      );
-
-  Map<String, dynamic> toJson() => {
-        "x": x,
-        "y": y,
-      };
-
-  @override
-  String toString() {
-    return 'End(x: $x, y: $y)';
   }
 }

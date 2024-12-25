@@ -38,9 +38,10 @@ class _ProcessScreenState extends State<ProcessScreen> {
           children: [
             if (controller.isProcessing)
               const CircularProgressIndicator()
-            else if (controller.navigateToNextScreen)
+            else if (controller.canSendToServer)
               ElevatedButton(
                 onPressed: () {
+                  /// TODO: make 'go to result' possible if server response = ok
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -49,7 +50,7 @@ class _ProcessScreenState extends State<ProcessScreen> {
                   );
                   controller.resetNavigationFlag();
                 },
-                child: const Text('Go to Result Screen'),
+                child: const Text('Send Result to server'),
               )
             else
               const Text('Waiting to start calculations...'),

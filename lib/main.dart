@@ -3,6 +3,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 
 import 'core/models/url_model.dart';
+import 'core/repository/path_repository.dart';
 import 'core/services/api_service.dart';
 import 'core/services/data_base_service.dart';
 import 'features/home/home_controller.dart';
@@ -13,17 +14,23 @@ void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(UrlModelAdapter());
   final urlBox = await Hive.openBox<UrlModel>('urlBox');
+  final pathModelBox = await Hive.openBox<String>('pathModelBox');
 
   runApp(
     MultiProvider(
       providers: [
-        Provider<DataBaseService>(create: (_) => DataBaseService(urlBox: urlBox)),
-        Provider<ApiService>(create: (_) => ApiService(dataBaseService: DataBaseService(urlBox: urlBox))),
+        Provider<DataBaseService>(create: (_) => DataBaseService(urlBox: urlBox, pathModelBox: pathModelBox)),
+        Provider<ApiService>(create: (_) => ApiService(dataBaseService: DataBaseService(urlBox: urlBox, pathModelBox: pathModelBox))),
+        Provider<PathRepository>(
+          create: (_) => PathRepository(
+              dataBaseService: DataBaseService(urlBox: urlBox, pathModelBox: pathModelBox),
+              apiService: ApiService(dataBaseService: DataBaseService(urlBox: urlBox, pathModelBox: pathModelBox))),
+        ),
         ChangeNotifierProvider(
           create: (context) => HomeController(apiService: context.read<ApiService>(), dataBaseService: context.read<DataBaseService>()),
         ),
         ChangeNotifierProvider(
-          create: (context) => ProcessController(),
+          create: (context) => ProcessController(apiService: context.read<ApiService>(), repository: context.read<PathRepository>()),
         ),
       ],
       child: const MyApp(),
