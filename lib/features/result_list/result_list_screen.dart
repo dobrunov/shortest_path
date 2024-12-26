@@ -26,7 +26,6 @@ class _ResultListScreenState extends State<ResultListScreen> {
   }
 
   void _getScreenData() {
-    // Schedule the asynchronous call to the controller
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller = Provider.of<ResultListController>(context, listen: false);
       controller.getResultsForScreen();

@@ -1,7 +1,7 @@
 class ServerResponse {
   final bool error;
   final String message;
-  final List<DataItem> data;
+  final List<Confirm> data;
 
   ServerResponse({
     required this.error,
@@ -11,7 +11,7 @@ class ServerResponse {
 
   factory ServerResponse.fromJson(Map<String, dynamic> json) {
     var dataList = json['data'] as List;
-    List<DataItem> dataItems = dataList.map((item) => DataItem.fromJson(item)).toList();
+    List<Confirm> dataItems = dataList.map((item) => Confirm.fromJson(item)).toList();
 
     return ServerResponse(
       error: json['error'],
@@ -34,17 +34,17 @@ class ServerResponse {
   }
 }
 
-class DataItem {
+class Confirm {
   final String id;
   final bool correct;
 
-  DataItem({
+  Confirm({
     required this.id,
     required this.correct,
   });
 
-  factory DataItem.fromJson(Map<String, dynamic> json) {
-    return DataItem(
+  factory Confirm.fromJson(Map<String, dynamic> json) {
+    return Confirm(
       id: json['id'],
       correct: json['correct'],
     );

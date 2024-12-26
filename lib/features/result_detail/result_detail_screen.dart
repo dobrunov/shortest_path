@@ -59,8 +59,8 @@ class _ResultDetailScreenState extends State<ResultDetailScreen> {
     }
 
     final pathSet = pathCoordinates != null ? pathCoordinates!.map((e) => '${e[0]}_${e[1]}').toSet() : <String>{};
-    print(grid);
-    print(pathSet);
+    debugPrint(grid.toString());
+    debugPrint(pathSet.toString());
 
     return Scaffold(
       appBar: AppBar(title: const Text('Result Details')),

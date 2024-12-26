@@ -19,7 +19,6 @@ class _ProcessScreenState extends State<ProcessScreen> {
   }
 
   void _startProcessing() {
-    // Schedule the asynchronous call to the controller
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller = Provider.of<ProcessController>(context, listen: false);
       controller.performCalculations();

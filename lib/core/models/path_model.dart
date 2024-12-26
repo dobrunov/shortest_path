@@ -1,9 +1,9 @@
-import 'grid_model.dart';
+import 'package:shortest_path/core/models/points_model.dart';
 
 class PathModel {
   final bool? error;
   final String? message;
-  final List<Datum>? data;
+  final List<Task>? data;
 
   PathModel({
     this.error,
@@ -14,7 +14,7 @@ class PathModel {
   factory PathModel.fromJson(Map<String, dynamic> json) => PathModel(
         error: json["error"],
         message: json["message"],
-        data: json["data"] == null ? [] : List<Datum>.from(json["data"]!.map((x) => Datum.fromJson(x))),
+        data: json["data"] == null ? [] : List<Task>.from(json["data"]!.map((x) => Task.fromJson(x))),
       );
 
   Map<String, dynamic> toJson() => {
@@ -29,24 +29,24 @@ class PathModel {
   }
 }
 
-class Datum {
+class Task {
   final String? id;
   final List<String>? field;
-  final End? start;
-  final End? end;
+  final Points? start;
+  final Points? end;
 
-  Datum({
+  Task({
     this.id,
     this.field,
     this.start,
     this.end,
   });
 
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
+  factory Task.fromJson(Map<String, dynamic> json) => Task(
         id: json["id"],
         field: json["field"] == null ? [] : List<String>.from(json["field"]!.map((x) => x)),
-        start: json["start"] == null ? null : End.fromJson(json["start"]),
-        end: json["end"] == null ? null : End.fromJson(json["end"]),
+        start: json["start"] == null ? null : Points.fromJson(json["start"]),
+        end: json["end"] == null ? null : Points.fromJson(json["end"]),
       );
 
   Map<String, dynamic> toJson() => {

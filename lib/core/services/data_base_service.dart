@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:hive/hive.dart';
 
-import '../models/grid_model.dart';
 import '../models/path_model.dart';
+import '../models/points_model.dart';
 import '../models/url_model.dart';
 
 class DataBaseService {

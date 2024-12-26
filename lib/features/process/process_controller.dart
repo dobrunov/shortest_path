@@ -1,8 +1,6 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 
-import '../../core/models/grid_model.dart';
+import '../../core/models/points_model.dart';
 import '../../core/repository/path_repository.dart';
 import '../../core/services/api_service.dart';
 import '../../core/services/data_base_service.dart';
@@ -30,10 +28,7 @@ class ProcessController extends ChangeNotifier {
 
     try {
       List<Map<String, dynamic>> result = await repository.calculateShortestPath();
-
       debugPrint("[SHORTEST PATH IN CONTROLLER] - $result");
-
-      // save to data base
       dataBaseService.saveShortestPathToHive(result);
 
       canSendToServer = true;
@@ -43,16 +38,14 @@ class ProcessController extends ChangeNotifier {
       isProcessing = false;
       notifyListeners();
     }
-    log("finish proc");
   }
 
   sendCalculationsToServer() async {
+    isProcessing = true;
     navigateToNextScreen = false;
-    // calculate payload
     List<Map<String, dynamic>> payload = await repository.calculatePayload();
-
-    // send put request
     navigateToNextScreen = await apiService.sendPathToServer(payload);
+    isProcessing = false;
     notifyListeners();
   }
 

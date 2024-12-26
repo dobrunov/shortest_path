@@ -12,11 +12,9 @@ class ResultListController extends ChangeNotifier {
   final DataBaseService dataBaseService;
 
   bool isLoading = false;
-  // bool canSendToServer = false;
   List<PathData>? pathData;
   List<List<int>>? pathCoordinates;
   Grid? grid;
-  // bool navigateToNextScreen = false;
 
   ResultListController({
     required this.apiService,
