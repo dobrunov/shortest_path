@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/models/grid_model.dart';
+import '../../core/models/path_model.dart';
 import '../../core/repository/path_repository.dart';
 import '../../core/services/api_service.dart';
 import '../../core/services/data_base_service.dart';
@@ -10,9 +11,11 @@ class ResultListController extends ChangeNotifier {
   final PathRepository repository;
   final DataBaseService dataBaseService;
 
-  // bool isProcessing = false;
+  bool isLoading = false;
   // bool canSendToServer = false;
   List<PathData>? pathData;
+  List<List<int>>? pathCoordinates;
+  Grid? grid;
   // bool navigateToNextScreen = false;
 
   ResultListController({
@@ -21,8 +24,9 @@ class ResultListController extends ChangeNotifier {
     required this.dataBaseService,
   });
 
-  getResultsForScreen() async {
+  void getResultsForScreen() async {
     pathData = await parseSavedShortestPath();
+    debugPrint("get results for screen - ${pathData.toString()}");
 
     notifyListeners();
   }
@@ -36,49 +40,28 @@ class ResultListController extends ChangeNotifier {
       return null;
     }
   }
-}
 
-class PathData {
-  final String id;
-  final List<Points> shortestPath;
-  final String pathString;
-
-  PathData({
-    required this.id,
-    required this.shortestPath,
-    required this.pathString,
-  });
-
-  factory PathData.fromMap(Map<String, dynamic> map) {
-    final shortestPath = (map['shortestPath'] as List<dynamic>).map((pointJson) {
-      if (pointJson is Points) {
-        return pointJson;
-      } else if (pointJson is Map<String, dynamic>) {
-        return Points.fromJson(pointJson);
-      } else {
-        throw Exception('Unexpected type for pointJson: ${pointJson.runtimeType}');
-      }
-    }).toList();
-
-    final pathString = shortestPath.map((point) => '(${point.x},${point.y})').join('->');
-
-    return PathData(
-      id: map['id'] as String,
-      shortestPath: shortestPath,
-      pathString: pathString,
-    );
+  Future<void> takeGrid(String id) async {
+    _startLoading();
+    grid = await repository.takeGrid(id);
+    _stopLoading();
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'shortestPath': shortestPath.map((point) => point.toJson()).toList(),
-      'pathString': pathString,
-    };
+  void getPathCoordinates(String id) async {
+    _startLoading();
+    if (pathData != null) {
+      pathCoordinates = pathData!.where((path) => path.id == id).expand((path) => path.shortestPath.map((point) => [point.x, point.y])).toList();
+    }
+    _stopLoading();
   }
 
-  @override
-  String toString() {
-    return 'PathData(id: $id, shortestPath: $shortestPath, pathString: $pathString)';
+  void _startLoading() {
+    isLoading = true;
+    notifyListeners();
+  }
+
+  void _stopLoading() {
+    isLoading = false;
+    notifyListeners();
   }
 }

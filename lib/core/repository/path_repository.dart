@@ -90,4 +90,45 @@ class PathRepository {
 
     return allPayloads;
   }
+
+  Future<Grid?> takeGrid(id) async {
+    debugPrint("[takeGrid Start]");
+
+    Grid? grid;
+
+    final pathModel = await dataBaseService.getSavedPathModel();
+
+    if (pathModel == null || pathModel.error == true) {
+      throw Exception('Path model not found or contains error');
+    }
+
+    if (pathModel.data == null || pathModel.data!.isEmpty) {
+      throw Exception('No data available in path model');
+    }
+
+    for (var datum in pathModel.data!) {
+      if (datum.field == null || datum.start == null || datum.end == null) {
+        throw Exception('Invalid data in path model');
+      }
+
+      if (datum.id == id) {
+        grid = Grid(
+          field: datum.field!,
+          start: datum.start!,
+          end: datum.end!,
+          id: datum.id,
+        );
+
+        if (grid.isValid(grid.start.x, grid.start.y)) {
+          grid.grid[grid.start.x][grid.start.y] = 'S';
+        }
+        if (grid.isValid(grid.end.x, grid.end.y)) {
+          grid.grid[grid.end.x][grid.end.y] = 'F';
+        }
+        break;
+      }
+    }
+
+    return grid;
+  }
 }

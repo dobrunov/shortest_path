@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shortest_path/features/result_list/result_list_controller.dart';
 
+import '../../core/models/grid_model.dart';
+import '../../core/models/path_model.dart';
+import '../result_detail/result_detail_screen.dart';
+
 class ResultListScreen extends StatefulWidget {
   const ResultListScreen({super.key});
 
@@ -11,6 +15,9 @@ class ResultListScreen extends StatefulWidget {
 
 class _ResultListScreenState extends State<ResultListScreen> {
   List<PathData>? pathData;
+  late final String id;
+  late ResultListController resultListController;
+  late Grid grid;
 
   @override
   void initState() {
@@ -26,50 +33,13 @@ class _ResultListScreenState extends State<ResultListScreen> {
     });
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   pathData = Provider.of<ResultListController>(context).pathData;
-  //
-  //   return Scaffold(
-  //     appBar: AppBar(title: const Text('Results')),
-  //     body: ListView.builder(
-  //       itemCount: pathData?.length,
-  //       itemBuilder: (context, index) {
-  //         return ListTile(
-  //           title: Text(pathData![index].pathString.toString()),
-  //           onTap: () {
-  //             // String shortestPath = "A -> B -> C";
-  //             // List<List<String>> grid = [
-  //             //   ['S', '.', '.', 'X'],
-  //             //   ['.', 'X', '.', '.'],
-  //             //   ['.', '.', 'X', 'E'],
-  //             // ];
-  //             // List<List<int>> pathCoordinates = [
-  //             //   [0, 0],
-  //             //   [1, 1],
-  //             //   [2, 2]
-  //             // ];
-  //
-  //             // Navigator.push(
-  //             //   context,
-  //             //   MaterialPageRoute(
-  //             //     builder: (context) => ResultDetailScreen(
-  //             //       shortestPath: shortestPath,
-  //             //       grid: grid,
-  //             //       pathCoordinates: pathCoordinates,
-  //             //     ),
-  //             //   ),
-  //             // );
-  //           },
-  //         );
-  //       },
-  //     ),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
-    pathData = Provider.of<ResultListController>(context).pathData;
+    resultListController = Provider.of<ResultListController>(context);
+    pathData = resultListController.pathData;
+    if (resultListController.grid != null) {
+      grid = resultListController.grid!;
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Results')),
@@ -79,7 +49,16 @@ class _ResultListScreenState extends State<ResultListScreen> {
           return ListTile(
             title: Text(pathData?[index].pathString ?? 'No Path String'),
             onTap: () {
-              //
+              final String itemId = pathData?[index].id ?? "";
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ResultDetailScreen(
+                    index: index,
+                    id: itemId,
+                  ),
+                ),
+              );
             },
           );
         },

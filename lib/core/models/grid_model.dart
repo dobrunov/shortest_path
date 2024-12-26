@@ -2,7 +2,7 @@ import 'dart:collection';
 
 class Grid {
   final String? id;
-  final List<List<String>> grid;
+  List<List<String>> grid;
   final End start;
   final End end;
 
@@ -146,10 +146,10 @@ class Points {
 }
 
 class End {
-  final int? x;
-  final int? y;
+  final int x;
+  final int y;
 
-  End({this.x, this.y});
+  End({this.x = 0, this.y = 0});
 
   factory End.fromJson(Map<String, dynamic> json) => End(
         x: json['x'],
