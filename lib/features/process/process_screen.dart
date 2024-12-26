@@ -41,19 +41,30 @@ class _ProcessScreenState extends State<ProcessScreen> {
             else if (controller.canSendToServer)
               ElevatedButton(
                 onPressed: () {
-                  /// TODO: make 'go to result' possible if server response = ok
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ResultListScreen(),
-                    ),
-                  );
-                  controller.resetNavigationFlag();
+                  debugPrint("PRESSED");
+                  controller.sendCalculationsToServer();
                 },
                 child: const Text('Send Result to server'),
               )
             else
               const Text('Waiting to start calculations...'),
+            Selector<ProcessController, bool>(
+              selector: (_, controller) => controller.navigateToNextScreen,
+              builder: (context, navigateToNext, _) {
+                if (navigateToNext) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    // apiController.resetNavigationFlag();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ResultListScreen(),
+                      ),
+                    );
+                  });
+                }
+                return const SizedBox();
+              },
+            ),
           ],
         ),
       ),

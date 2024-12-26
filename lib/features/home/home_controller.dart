@@ -27,9 +27,8 @@ class HomeController extends ChangeNotifier {
 
     try {
       final result = await apiService.getData();
-      print(result);
+      debugPrint("Result in home controller - ${result.toString()}");
 
-      /// save to data base
       dataBaseService.savePathModelToHive(result);
 
       if (result.error == true) {

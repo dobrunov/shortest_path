@@ -6,15 +6,15 @@ class Grid {
   final End start;
   final End end;
 
-  final List<Point> directions = [
-    Point(1, 0),
-    Point(0, 1),
-    Point(-1, 0),
-    Point(0, -1),
-    Point(1, 1),
-    Point(1, -1),
-    Point(-1, 1),
-    Point(-1, -1),
+  final List<Points> directions = [
+    Points(1, 0),
+    Points(0, 1),
+    Points(-1, 0),
+    Points(0, -1),
+    Points(1, 1),
+    Points(1, -1),
+    Points(-1, 1),
+    Points(-1, -1),
   ];
 
   Grid({
@@ -33,12 +33,12 @@ class Grid {
   }
 
   /// BFS
-  List<Point> findShortestPath() {
+  List<Points> findShortestPath() {
     Queue<Map<String, dynamic>> queue = Queue();
-    Set<Point> visited = {};
+    Set<Points> visited = {};
 
-    Point startPoint = Point(start.x!, start.y!);
-    Point endPoint = Point(end.x!, end.y!);
+    Points startPoint = Points(start.x!, start.y!);
+    Points endPoint = Points(end.x!, end.y!);
 
     queue.add({
       'current': startPoint,
@@ -48,8 +48,8 @@ class Grid {
 
     while (queue.isNotEmpty) {
       final Map<String, dynamic> currentNode = queue.removeFirst();
-      Point currentPoint = currentNode['current'];
-      List<Point> currentPath = currentNode['path'];
+      Points currentPoint = currentNode['current'];
+      List<Points> currentPath = currentNode['path'];
 
       if (currentPoint == endPoint) {
         return currentPath;
@@ -60,7 +60,7 @@ class Grid {
         int ny = currentPoint.y + direction.y;
 
         if (isValid(nx, ny)) {
-          Point nextPoint = Point(nx, ny);
+          Points nextPoint = Points(nx, ny);
 
           if (!visited.contains(nextPoint)) {
             visited.add(nextPoint);
@@ -76,24 +76,67 @@ class Grid {
     return [];
   }
 
-  Datum toDatum(List<Point> path) {
-    return Datum(
-      id: id,
-      field: path.map((point) => '(${point.x}, ${point.y})').toList(),
-      start: End(x: start.x, y: start.y),
-      end: End(x: end.x, y: end.y),
-    );
+  List<Map<String, dynamic>> toResultJson(List<Map<String, dynamic>>? shortestPaths) {
+    try {
+      if (shortestPaths == null || shortestPaths.isEmpty) {
+        throw Exception("Shortest paths data is null or empty");
+      }
+
+      return shortestPaths.map((pathMap) {
+        final id = pathMap['id'] as String?;
+        final points = pathMap['shortestPath'] as List<Points>?;
+
+        if (id == null || points == null) {
+          throw Exception("Invalid data structure in shortestPaths");
+        }
+
+        final pathString = points.map((point) => '(${point.x},${point.y})').join('->');
+        final steps = points
+            .map((point) => {
+                  "x": point.x.toString(),
+                  "y": point.y.toString(),
+                })
+            .toList();
+
+        return {
+          "id": id,
+          "result": {
+            "steps": steps,
+            "path": pathString,
+          }
+        };
+      }).toList();
+    } catch (e, stackTrace) {
+      print("Error occurred in toResultJson: $e");
+      print("Stack trace: $stackTrace");
+
+      return [];
+    }
   }
 }
 
-class Point {
+class Points {
   final int x;
   final int y;
 
-  Point(this.x, this.y);
+  Points(this.x, this.y);
+
+  Map<String, dynamic> toJson() {
+    return {
+      'x': x,
+      'y': y,
+    };
+  }
+
+  factory Points.fromJson(Map<String, dynamic> json) {
+    return Points(
+      json['x'] as int,
+      json['y'] as int,
+    );
+  }
 
   @override
-  bool operator ==(Object other) => identical(this, other) || (other is Point && x == other.x && y == other.y);
+  bool operator ==(Object other) => identical(this, other) || (other is Points && x == other.x && y == other.y);
 
   @override
   int get hashCode => x.hashCode ^ y.hashCode;
@@ -120,32 +163,4 @@ class End {
 
   @override
   String toString() => 'End(x: $x, y: $y)';
-}
-
-class Datum {
-  final String? id;
-  final List<String>? field;
-  final End? start;
-  final End? end;
-
-  Datum({this.id, this.field, this.start, this.end});
-
-  factory Datum.fromJson(Map<String, dynamic> json) => Datum(
-        id: json['id'],
-        field: json['field'] == null ? [] : List<String>.from(json['field']!.map((x) => x)),
-        start: json['start'] == null ? null : End.fromJson(json['start']),
-        end: json['end'] == null ? null : End.fromJson(json['end']),
-      );
-
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'field': field == null ? [] : List<dynamic>.from(field!.map((x) => x)),
-        'start': start?.toJson(),
-        'end': end?.toJson(),
-      };
-
-  @override
-  String toString() {
-    return 'Datum(id: $id, field: $field, start: $start, end: $end)';
-  }
 }
