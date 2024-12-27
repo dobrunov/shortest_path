@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 
-import '../../core/models/path_model.dart';
 import '../../core/services/api_service.dart';
 import '../../core/services/data_base_service.dart';
 
@@ -13,7 +12,10 @@ class HomeController extends ChangeNotifier {
   dynamic data;
   bool navigateToNextScreen = false;
 
-  HomeController({required this.apiService, required this.dataBaseService});
+  HomeController({
+    required this.apiService,
+    required this.dataBaseService,
+  });
 
   Future<void> createRequest(String url) async {
     await dataBaseService.saveUrlToHive(url);
@@ -28,17 +30,14 @@ class HomeController extends ChangeNotifier {
 
     try {
       final result = await apiService.getData();
-      print(result);
+      dataBaseService.savePathModelToHive(result);
+      debugPrint("Result controller - ${result.toString()}");
 
-      if (result is PathModel) {
-        if (result.error == true) {
-          errorMessage = result.message;
-        } else {
-          data = result;
-          navigateToNextScreen = true;
-        }
+      if (result.error == true) {
+        errorMessage = result.message;
       } else {
-        errorMessage = 'Unexpected data format received.';
+        data = result;
+        navigateToNextScreen = true;
       }
     } catch (e) {
       errorMessage = 'An error occurred: $e';

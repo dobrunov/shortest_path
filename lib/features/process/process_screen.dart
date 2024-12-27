@@ -19,7 +19,6 @@ class _ProcessScreenState extends State<ProcessScreen> {
   }
 
   void _startProcessing() {
-    // Schedule the asynchronous call to the controller
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller = Provider.of<ProcessController>(context, listen: false);
       controller.performCalculations();
@@ -31,30 +30,74 @@ class _ProcessScreenState extends State<ProcessScreen> {
     final controller = Provider.of<ProcessController>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Process Screen')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (controller.isProcessing)
-              const CircularProgressIndicator()
-            else if (controller.navigateToNextScreen)
-              ElevatedButton(
-                onPressed: () {
+      appBar: AppBar(
+        title: const Text('Process Screen'),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (controller.canSendToServer)
+                    const Padding(
+                      padding: EdgeInsets.all(32.0),
+                      child: Text("All calculations has finished, you can send you results to server"),
+                    )
+                  else
+                    Padding(
+                      padding: const EdgeInsets.all(50.0),
+                      child: AspectRatio(
+                        aspectRatio: 1.0,
+                        child: CircularProgressIndicator(
+                          color: Colors.blue[200],
+                          strokeWidth: 20.0,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: controller.isProcessing
+                  ? null
+                  : () {
+                      controller.sendCalculationsToServer();
+                    },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                textStyle: const TextStyle(fontSize: 18),
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(12.0),
+                child: Text("Send Result to server"),
+              ),
+            ),
+          ),
+          Selector<ProcessController, bool>(
+            selector: (_, controller) => controller.navigateToNextScreen,
+            builder: (context, navigateToNext, _) {
+              if (navigateToNext) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                       builder: (context) => const ResultListScreen(),
                     ),
                   );
-                  controller.resetNavigationFlag();
-                },
-                child: const Text('Go to Result Screen'),
-              )
-            else
-              const Text('Waiting to start calculations...'),
-          ],
-        ),
+                });
+              }
+              return const SizedBox();
+            },
+          ),
+        ],
       ),
     );
   }

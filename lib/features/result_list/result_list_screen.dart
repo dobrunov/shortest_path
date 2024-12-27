@@ -1,48 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shortest_path/features/result_list/result_list_controller.dart';
 
+import '../../core/models/grid_model.dart';
+import '../../core/models/path_model.dart';
 import '../result_detail/result_detail_screen.dart';
 
-class ResultListScreen extends StatelessWidget {
+class ResultListScreen extends StatefulWidget {
   const ResultListScreen({super.key});
 
   @override
+  State<ResultListScreen> createState() => _ResultListScreenState();
+}
+
+class _ResultListScreenState extends State<ResultListScreen> {
+  List<PathData>? pathData;
+  late final String id;
+  late ResultListController resultListController;
+  late Grid grid;
+
+  @override
+  void initState() {
+    super.initState();
+    _getScreenData();
+  }
+
+  void _getScreenData() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final controller = Provider.of<ResultListController>(context, listen: false);
+      controller.getResultsForScreen();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    List<String> results = ["Result 1", "Result 2"];
+    resultListController = Provider.of<ResultListController>(context);
+    pathData = resultListController.pathData;
+    if (resultListController.grid != null) {
+      grid = resultListController.grid!;
+    }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Results')),
-      body: ListView.builder(
-        itemCount: results.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(results[index]),
-            onTap: () {
-              String shortestPath = "A -> B -> C";
-              List<List<String>> grid = [
-                ['S', '.', '.', 'X'],
-                ['.', 'X', '.', '.'],
-                ['.', '.', 'X', 'E'],
-              ];
-              List<List<int>> pathCoordinates = [
-                [0, 0],
-                [1, 1],
-                [2, 2]
-              ];
-
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ResultDetailScreen(
-                    shortestPath: shortestPath,
-                    grid: grid,
-                    pathCoordinates: pathCoordinates,
+        appBar: AppBar(
+          title: const Text('Result list screen'),
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: ListView.builder(
+            itemCount: pathData?.length ?? 0,
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  ListTile(
+                    title: Text(pathData?[index].pathString ?? 'No Path String'),
+                    onTap: () {
+                      final String itemId = pathData?[index].id ?? "";
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ResultDetailScreen(
+                            index: index,
+                            id: itemId,
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ),
+                  if (index < (pathData?.length ?? 0) - 1) const Divider(color: Colors.grey, thickness: 0.5),
+                ],
               );
             },
-          );
-        },
-      ),
-    );
+          ),
+        ));
   }
 }
