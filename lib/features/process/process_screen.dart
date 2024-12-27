@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/widgets/custom_elevated_button.dart';
+import '../../core/widgets/custom_progress_indicator.dart';
 import '../result_list/result_list_screen.dart';
 import 'process_controller.dart';
 
@@ -38,46 +40,41 @@ class _ProcessScreenState extends State<ProcessScreen> {
       body: Column(
         children: [
           Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (!controller.isProcessing && controller.canSendToServer)
-                    const Padding(
-                      padding: EdgeInsets.all(32.0),
-                      child: Text("All calculations have finished, you can send your results to the server"),
-                    ),
-                  if (controller.isProcessing)
-                    Padding(
-                      padding: const EdgeInsets.all(50.0),
-                      child: AspectRatio(
-                        aspectRatio: 1.0,
-                        child: CircularProgressIndicator(
-                          color: Colors.blue[200],
-                          strokeWidth: 20.0,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (!controller.isProcessing && controller.canSendToServer)
+                      const SizedBox(
+                        height: 130.0,
+                        child: Center(
+                          child: Text(
+                            "All calculations have finished, you can send your results to the server",
+                            textAlign: TextAlign.center,
+                          ),
                         ),
                       ),
+                    if (controller.isProcessing) const CustomProgressIndicator(),
+                    //
+                    if (controller.showIndicator)
+                      Text(
+                        "${controller.progress}%",
+                        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      ),
+                    //
+                    const Spacer(),
+                    CustomElevatedButton(
+                      label: "Send Result to server",
+                      onPressed: controller.isProcessing
+                          ? null
+                          : () {
+                              controller.sendCalculationsToServer();
+                            },
                     ),
-                ],
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: controller.isProcessing
-                  ? null
-                  : () {
-                      controller.sendCalculationsToServer();
-                    },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-                textStyle: const TextStyle(fontSize: 18),
-              ),
-              child: const Padding(
-                padding: EdgeInsets.all(12.0),
-                child: Text("Send Result to server"),
+                  ],
+                ),
               ),
             ),
           ),

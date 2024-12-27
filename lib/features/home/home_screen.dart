@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/widgets/custom_elevated_button.dart';
+import '../../core/widgets/custom_progress_indicator.dart';
 import '../process/process_screen.dart';
 import 'home_controller.dart';
 
@@ -44,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final apiController = Provider.of<HomeController>(context);
+    final controller = Provider.of<HomeController>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -58,7 +60,6 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (_errorMessage != null)
                     Padding(
@@ -75,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     decoration: InputDecoration(
                       labelText: 'API Base URL',
                       labelStyle: const TextStyle(color: Colors.black),
-                      errorText: apiController.errorMessage,
+                      errorText: controller.errorMessage,
                       enabledBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                       ),
@@ -86,31 +87,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     controller: _urlController,
                   ),
-                  if (apiController.isLoading)
-                    Padding(
-                      padding: const EdgeInsets.all(50.0),
-                      child: AspectRatio(
-                        aspectRatio: 1.0,
-                        child: CircularProgressIndicator(
-                          color: Colors.blue[200],
-                          strokeWidth: 20.0,
-                        ),
-                      ),
+                  if (controller.isLoading)
+                    const Center(
+                      child: CustomProgressIndicator(),
                     ),
                   const Spacer(),
-                  ElevatedButton(
+                  CustomElevatedButton(
+                    label: "Send",
                     onPressed: () {
-                      _handleSubmit(apiController);
+                      _handleSubmit(controller);
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      textStyle: const TextStyle(fontSize: 18),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(12.0),
-                      child: Text("Send"),
-                    ),
                   ),
                 ],
               ),
@@ -121,7 +107,7 @@ class _HomeScreenState extends State<HomeScreen> {
             builder: (context, navigateToNext, _) {
               if (navigateToNext) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
-                  apiController.resetNavigationFlag();
+                  controller.resetNavigationFlag();
                   Navigator.push(
                     context,
                     MaterialPageRoute(

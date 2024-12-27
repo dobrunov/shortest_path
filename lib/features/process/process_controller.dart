@@ -12,8 +12,10 @@ class ProcessController extends ChangeNotifier {
 
   bool isProcessing = false;
   bool canSendToServer = false;
+  bool showIndicator = false;
   List<List<Points>>? shortestPath;
   bool navigateToNextScreen = false;
+  int progress = 0;
 
   ProcessController({
     required this.apiService,
@@ -25,6 +27,7 @@ class ProcessController extends ChangeNotifier {
     debugPrint("[Start Calculations]");
     isProcessing = true;
     canSendToServer = false;
+    showIndicator = true;
     notifyListeners();
 
     try {
@@ -32,11 +35,17 @@ class ProcessController extends ChangeNotifier {
       dataBaseService.saveShortestPathToHive(result);
       debugPrint("[Shortest path] - $result");
 
+      for (int i = 1; i <= 100; i++) {
+        await Future.delayed(const Duration(milliseconds: 50));
+        progress = i;
+        notifyListeners();
+      }
+
       canSendToServer = true;
     } catch (e) {
       debugPrint("Error: $e");
     } finally {
-      await Future.delayed(const Duration(seconds: 2));
+      // await Future.delayed(const Duration(seconds: 2));
       isProcessing = false;
       notifyListeners();
     }
@@ -45,6 +54,7 @@ class ProcessController extends ChangeNotifier {
   sendCalculationsToServer() async {
     isProcessing = true;
     navigateToNextScreen = false;
+    showIndicator = false;
     notifyListeners();
 
     List<Map<String, dynamic>> payload = await repository.calculatePayload();
