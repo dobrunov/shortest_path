@@ -12,7 +12,10 @@ class HomeController extends ChangeNotifier {
   dynamic data;
   bool navigateToNextScreen = false;
 
-  HomeController({required this.apiService, required this.dataBaseService});
+  HomeController({
+    required this.apiService,
+    required this.dataBaseService,
+  });
 
   Future<void> createRequest(String url) async {
     await dataBaseService.saveUrlToHive(url);
@@ -27,9 +30,8 @@ class HomeController extends ChangeNotifier {
 
     try {
       final result = await apiService.getData();
-      debugPrint("Result in home controller - ${result.toString()}");
-
       dataBaseService.savePathModelToHive(result);
+      debugPrint("Result controller - ${result.toString()}");
 
       if (result.error == true) {
         errorMessage = result.message;

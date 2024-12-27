@@ -38,8 +38,7 @@ void main() async {
               apiService: context.read<ApiService>(), repository: context.read<PathRepository>(), dataBaseService: context.read<DataBaseService>()),
         ),
         ChangeNotifierProvider(
-          create: (context) => ResultListController(
-              apiService: context.read<ApiService>(), repository: context.read<PathRepository>(), dataBaseService: context.read<DataBaseService>()),
+          create: (context) => ResultListController(repository: context.read<PathRepository>(), dataBaseService: context.read<DataBaseService>()),
         ),
       ],
       child: const MyApp(),

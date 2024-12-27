@@ -14,9 +14,14 @@ class DataBaseService {
 
   bool isInitialized = false;
 
-  DataBaseService({required this.urlBox, required this.pathModelBox, required this.shortestPathBox});
+  DataBaseService({
+    required this.urlBox,
+    required this.pathModelBox,
+    required this.shortestPathBox,
+  });
   //
   // URL --------------------------------------------------------
+  //
   Future<void> saveUrlToHive(String url) async {
     final urlModel = UrlModel(url: url);
     await urlBox.put('savedUrl', urlModel);
@@ -29,6 +34,7 @@ class DataBaseService {
 
   //
   // Path Model --------------------------------------------------
+  //
   Future<void> savePathModelToHive(PathModel pathModel) async {
     final jsonString = jsonEncode(pathModel.toJson());
     await pathModelBox.put('savedPathModel', jsonString);
@@ -44,7 +50,9 @@ class DataBaseService {
     }
   }
 
+  //
   // Shortest Path -----------------------------------------------
+  //
   Future<void> saveShortestPathToHive(List<Map<String, dynamic>> shortestPaths) async {
     final jsonPathList = shortestPaths.map((path) {
       return {
@@ -54,9 +62,11 @@ class DataBaseService {
     }).toList();
 
     await shortestPathBox.put('savedShortestPath', jsonEncode(jsonPathList));
-    debugPrint("savedShortestPath - ok");
   }
 
+  //
+  // Get Shortest Path -------------------------------------------
+  //
   Future<List<Map<String, dynamic>>?> getSavedShortestPath() async {
     final jsonString = shortestPathBox.get('savedShortestPath');
 

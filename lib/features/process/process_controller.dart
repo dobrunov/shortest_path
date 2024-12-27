@@ -22,14 +22,14 @@ class ProcessController extends ChangeNotifier {
   });
 
   void performCalculations() async {
-    debugPrint("[Start Calculations in controller]");
+    debugPrint("[Start Calculations]");
     isProcessing = true;
     canSendToServer = false;
 
     try {
       List<Map<String, dynamic>> result = await repository.calculateShortestPath();
-      debugPrint("[SHORTEST PATH IN CONTROLLER] - $result");
       dataBaseService.saveShortestPathToHive(result);
+      debugPrint("[Shortest path] - $result");
 
       canSendToServer = true;
     } catch (e) {

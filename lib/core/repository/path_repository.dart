@@ -85,7 +85,7 @@ class PathRepository {
       final List<Map<String, dynamic>>? shortestPath = await dataBaseService.getSavedShortestPath();
 
       allPayloads = grid.toResultJson(shortestPath);
-      debugPrint("[allPayloads - $allPayloads]");
+      debugPrint("[allPayloads] - $allPayloads");
     }
 
     return allPayloads;

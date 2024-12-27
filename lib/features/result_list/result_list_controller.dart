@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import '../../core/models/grid_model.dart';
 import '../../core/models/path_model.dart';
 import '../../core/repository/path_repository.dart';
-import '../../core/services/api_service.dart';
 import '../../core/services/data_base_service.dart';
 
 class ResultListController extends ChangeNotifier {
-  final ApiService apiService;
   final PathRepository repository;
   final DataBaseService dataBaseService;
 
@@ -17,7 +15,6 @@ class ResultListController extends ChangeNotifier {
   Grid? grid;
 
   ResultListController({
-    required this.apiService,
     required this.repository,
     required this.dataBaseService,
   });

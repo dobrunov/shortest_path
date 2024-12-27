@@ -30,7 +30,7 @@ class ApiService {
 
   Future<bool> sendPathToServer(var payload) async {
     bool responseSuccess = false;
-    debugPrint("send to server");
+    debugPrint("Send path to server");
     final String? savedUrl = await dataBaseService.getSavedUrl();
 
     if (savedUrl == null) {
@@ -49,24 +49,23 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        responseSuccess = true;
         debugPrint("StatusCode: ${response.statusCode}");
-        var parsedJson = json.decode(response.body);
 
+        responseSuccess = true;
+        var parsedJson = json.decode(response.body);
         ServerResponse serverResponse = ServerResponse.fromJson(parsedJson);
 
-        debugPrint("Error: ${serverResponse.error}");
         debugPrint("Message: ${serverResponse.message}");
         debugPrint("Data: ${serverResponse.data}");
       } else {
         if (response.statusCode == 500) {
           debugPrint("StatusCode: ${response.statusCode}");
+
           final errorResponse = json.decode(response.body);
           debugPrint("Server Error: ${errorResponse['message']}");
           debugPrint("Error details: ${errorResponse['data']}");
         }
 
-        ///
         debugPrint("Failed with status: ${response.statusCode}, body: ${response.body}");
       }
     } catch (e) {
