@@ -42,12 +42,12 @@ class _ProcessScreenState extends State<ProcessScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (controller.canSendToServer)
+                  if (!controller.isProcessing && controller.canSendToServer)
                     const Padding(
                       padding: EdgeInsets.all(32.0),
-                      child: Text("All calculations has finished, you can send you results to server"),
-                    )
-                  else
+                      child: Text("All calculations have finished, you can send your results to the server"),
+                    ),
+                  if (controller.isProcessing)
                     Padding(
                       padding: const EdgeInsets.all(50.0),
                       child: AspectRatio(

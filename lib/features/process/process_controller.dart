@@ -25,6 +25,7 @@ class ProcessController extends ChangeNotifier {
     debugPrint("[Start Calculations]");
     isProcessing = true;
     canSendToServer = false;
+    notifyListeners();
 
     try {
       List<Map<String, dynamic>> result = await repository.calculateShortestPath();
@@ -35,7 +36,7 @@ class ProcessController extends ChangeNotifier {
     } catch (e) {
       debugPrint("Error: $e");
     } finally {
-      await Future.delayed(const Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 2));
       isProcessing = false;
       notifyListeners();
     }
@@ -44,8 +45,11 @@ class ProcessController extends ChangeNotifier {
   sendCalculationsToServer() async {
     isProcessing = true;
     navigateToNextScreen = false;
+    notifyListeners();
+
     List<Map<String, dynamic>> payload = await repository.calculatePayload();
     navigateToNextScreen = await apiService.sendPathToServer(payload);
+    await Future.delayed(const Duration(seconds: 2));
     isProcessing = false;
     notifyListeners();
   }
