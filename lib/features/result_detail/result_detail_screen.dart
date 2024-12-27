@@ -63,14 +63,18 @@ class _ResultDetailScreenState extends State<ResultDetailScreen> {
     debugPrint(pathSet.toString());
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Result Details')),
+      appBar: AppBar(
+        title: const Text('Preview'),
+        backgroundColor: Colors.blue,
+        foregroundColor: Colors.white,
+      ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.only(top: 32.0, bottom: 16.0),
             child: Text(
-              'Shortest Path: ${pathData?[widget.index].pathString}',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              '${pathData?[widget.index].pathString}',
+              style: const TextStyle(fontSize: 18),
             ),
           ),
           Expanded(
@@ -88,7 +92,7 @@ class _ResultDetailScreenState extends State<ResultDetailScreen> {
                 if (grid[row][col] == 'S') {
                   cellColor = const Color(0xFF64FFDA); // Start cell color
                 } else if (grid[row][col] == 'F') {
-                  cellColor = const Color(0xFF009688); // Endpoint color
+                  cellColor = const Color(0xFF009688); // Finish cell color
                 } else if (pathSet.contains('${row}_$col')) {
                   cellColor = const Color(0xFF4CAF50); // Path color
                 } else if (grid[row][col] == 'X') {

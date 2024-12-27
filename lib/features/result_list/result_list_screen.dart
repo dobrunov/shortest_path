@@ -41,27 +41,38 @@ class _ResultListScreenState extends State<ResultListScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Results')),
-      body: ListView.builder(
-        itemCount: pathData?.length ?? 0,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text(pathData?[index].pathString ?? 'No Path String'),
-            onTap: () {
-              final String itemId = pathData?[index].id ?? "";
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ResultDetailScreen(
-                    index: index,
-                    id: itemId,
+        appBar: AppBar(
+          title: const Text('Result list screen'),
+          backgroundColor: Colors.blue,
+          foregroundColor: Colors.white,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: ListView.builder(
+            itemCount: pathData?.length ?? 0,
+            itemBuilder: (context, index) {
+              return Column(
+                children: [
+                  ListTile(
+                    title: Text(pathData?[index].pathString ?? 'No Path String'),
+                    onTap: () {
+                      final String itemId = pathData?[index].id ?? "";
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ResultDetailScreen(
+                            index: index,
+                            id: itemId,
+                          ),
+                        ),
+                      );
+                    },
                   ),
-                ),
+                  if (index < (pathData?.length ?? 0) - 1) const Divider(color: Colors.grey, thickness: 0.5),
+                ],
               );
             },
-          );
-        },
-      ),
-    );
+          ),
+        ));
   }
 }

@@ -11,9 +11,6 @@ class PathRepository {
   PathRepository({required this.dataBaseService, required this.apiService});
 
   Future<List<Map<String, dynamic>>> calculateShortestPath() async {
-    debugPrint("[Calculate Shortest Path Start]");
-
-    debugPrint("[getSavedPathModel]");
     final pathModel = await dataBaseService.getSavedPathModel();
     debugPrint("[pathModel] - ${pathModel.toString()}");
 
@@ -32,7 +29,6 @@ class PathRepository {
         throw Exception('Invalid data in path model');
       }
 
-      debugPrint("[Create Grid Object for ${datum.id}]");
       final grid = Grid(
         field: datum.field!,
         start: datum.start!,
@@ -40,7 +36,6 @@ class PathRepository {
         id: datum.id,
       );
 
-      debugPrint("[Calculate Shortest Path for ${datum.id}]");
       var shPath = grid.findShortestPath();
       debugPrint("[The shortest path has been found for ${datum.id}] - $shPath");
 

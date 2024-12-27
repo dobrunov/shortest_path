@@ -35,6 +35,7 @@ class ProcessController extends ChangeNotifier {
     } catch (e) {
       debugPrint("Error: $e");
     } finally {
+      await Future.delayed(const Duration(seconds: 1));
       isProcessing = false;
       notifyListeners();
     }
