@@ -11,6 +11,7 @@ class ProcessController extends ChangeNotifier {
   final DataBaseService dataBaseService;
 
   bool isProcessing = false;
+  bool calcFinishedMessageShowing = false;
   bool canSendToServer = false;
   bool showIndicator = false;
   List<List<Points>>? shortestPath;
@@ -30,6 +31,7 @@ class ProcessController extends ChangeNotifier {
     canSendToServer = false;
     showIndicator = true;
     errorMessage = null;
+    calcFinishedMessageShowing = false;
     notifyListeners();
 
     try {
@@ -49,6 +51,7 @@ class ProcessController extends ChangeNotifier {
       debugPrint("Error: $e");
     } finally {
       isProcessing = false;
+      calcFinishedMessageShowing = true;
       notifyListeners();
     }
   }

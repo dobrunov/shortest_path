@@ -56,7 +56,7 @@ class _ProcessScreenState extends State<ProcessScreen> {
                           ),
                         ),
                       ),
-                    if (!controller.isProcessing && controller.canSendToServer && controller.errorMessage == null)
+                    if (controller.calcFinishedMessageShowing)
                       const SizedBox(
                         height: 130.0,
                         child: Center(
