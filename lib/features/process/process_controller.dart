@@ -16,6 +16,7 @@ class ProcessController extends ChangeNotifier {
   List<List<Points>>? shortestPath;
   bool navigateToNextScreen = false;
   int progress = 0;
+  String? errorMessage;
 
   ProcessController({
     required this.apiService,
@@ -28,6 +29,7 @@ class ProcessController extends ChangeNotifier {
     isProcessing = true;
     canSendToServer = false;
     showIndicator = true;
+    errorMessage = null;
     notifyListeners();
 
     try {
@@ -43,29 +45,63 @@ class ProcessController extends ChangeNotifier {
 
       canSendToServer = true;
     } catch (e) {
+      errorMessage = "Calculation error: $e";
       debugPrint("Error: $e");
     } finally {
-      // await Future.delayed(const Duration(seconds: 2));
       isProcessing = false;
       notifyListeners();
     }
   }
 
-  sendCalculationsToServer() async {
+  Future<void> sendCalculationsToServer() async {
     isProcessing = true;
     navigateToNextScreen = false;
     showIndicator = false;
+    errorMessage = null;
     notifyListeners();
 
-    List<Map<String, dynamic>> payload = await repository.calculatePayload();
-    navigateToNextScreen = await apiService.sendPathToServer(payload);
-    await Future.delayed(const Duration(seconds: 2));
-    isProcessing = false;
-    notifyListeners();
+    try {
+      List<Map<String, dynamic>> payload = await repository.calculatePayload();
+      navigateToNextScreen = await apiService.sendPathToServer(payload);
+    } catch (e) {
+      errorMessage = "$e";
+      debugPrint("Error: $e");
+    } finally {
+      isProcessing = false;
+      notifyListeners();
+    }
   }
 
   void resetNavigationFlag() {
     canSendToServer = false;
+    errorMessage = null;
     notifyListeners();
   }
 }
+
+/// PAYLOAD FOR TEST ERROR WITH STATUS 400 - Message incorrect
+// List<Map<String, dynamic>> payload = [
+//   {
+//     'id': '7d785c38-cd54-4a98-ab57-44e50ae646c1',
+//     'result': {
+//       'steps': [
+//         {'x': 1, 'y': 1},// 2.1
+//         {'x': 1, 'y': 2},
+//         {'x': 0, 'y': 2}
+//       ],
+//       'path': '(2,1)->(1,2)->(0,2)'
+//     }
+//   },
+//   {
+//     'id': '88746d24-bf68-4dea-a6b6-4a8fefb47eb9',
+//     'result': {
+//       'steps': [
+//         {'x': 0, 'y': 3},
+//         {'x': 1, 'y': 2},
+//         {'x': 2, 'y': 1},
+//         {'x': 3, 'y': 0}
+//       ],
+//       'path': '(0,3)->(1,2)->(2,1)->(3,0)'
+//     }
+//   }
+// ];

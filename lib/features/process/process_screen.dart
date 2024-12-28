@@ -46,7 +46,17 @@ class _ProcessScreenState extends State<ProcessScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (!controller.isProcessing && controller.canSendToServer)
+                    if (controller.errorMessage != null)
+                      SizedBox(
+                        height: 130.0,
+                        child: Center(
+                          child: Text(
+                            controller.errorMessage ?? "",
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    if (!controller.isProcessing && controller.canSendToServer && controller.errorMessage == null)
                       const SizedBox(
                         height: 130.0,
                         child: Center(
