@@ -29,17 +29,14 @@ class ApiService {
   }
 
   Future<bool> sendPathToServer(var payload) async {
-    bool responseSuccess = false;
     debugPrint("Send path to server");
     final String? savedUrl = await dataBaseService.getSavedUrl();
 
     if (savedUrl == null) {
-      debugPrint("Error: Saved URL is null");
+      throw Exception("Saved URL is null");
     }
 
-    final Uri url;
-
-    url = Uri.parse(savedUrl!);
+    final Uri url = Uri.parse(savedUrl);
 
     try {
       final response = await http.post(
@@ -51,26 +48,51 @@ class ApiService {
       if (response.statusCode == 200) {
         debugPrint("StatusCode: ${response.statusCode}");
 
-        responseSuccess = true;
         var parsedJson = json.decode(response.body);
         ServerResponse serverResponse = ServerResponse.fromJson(parsedJson);
 
         debugPrint("Message: ${serverResponse.message}");
         debugPrint("Data: ${serverResponse.data}");
-      } else {
-        if (response.statusCode == 500) {
-          debugPrint("StatusCode: ${response.statusCode}");
 
-          final errorResponse = json.decode(response.body);
+        return true;
+      } else if (response.statusCode == 500) {
+        final errorResponse = json.decode(response.body);
+        if (errorResponse['error'] == true) {
           debugPrint("Server Error: ${errorResponse['message']}");
           debugPrint("Error details: ${errorResponse['data']}");
+          throw Exception(
+            "Server error: ${errorResponse['message']}, details: ${errorResponse['data']}",
+          );
+        } else {
+          throw Exception("Unexpected server error format.");
         }
+      } else if (response.statusCode == 400) {
+        final errorResponse = json.decode(response.body);
 
-        debugPrint("Failed with status: ${response.statusCode}, body: ${response.body}");
+        if (errorResponse['error'] == true) {
+          String message = errorResponse['message'] ?? 'Unknown error';
+          debugPrint("Error message: $message");
+
+          var data = errorResponse['data'] as List<dynamic>;
+          for (var item in data) {
+            String id = item['id'];
+            bool isCorrect = item['correct'];
+            debugPrint("ID: $id, Correct: $isCorrect");
+          }
+
+          throw message;
+        } else {
+          throw Exception("Unexpected error format in response body.");
+        }
+      } else {
+        throw Exception(
+          "Status: ${response.statusCode}, body: ${response.body}",
+        );
       }
     } catch (e) {
-      debugPrint("Error: $e");
+      debugPrint("[catch in api service]: $e");
+      throw Exception("$e");
     }
-    return responseSuccess;
   }
+
 }
