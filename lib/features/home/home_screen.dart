@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/widgets/custom_elevated_button.dart';
@@ -46,7 +47,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<HomeController>(context);
+    final homeController = GetIt.instance<HomeController>();
+    //
+    if (homeController.navigateToNextScreen) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        homeController.resetNavigationFlag();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ProcessScreen(),
+          ),
+        );
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -76,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     decoration: InputDecoration(
                       labelText: 'API Base URL',
                       labelStyle: const TextStyle(color: Colors.black),
-                      errorText: controller.errorMessage,
+                      errorText: homeController.errorMessage,
                       enabledBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.black),
                       ),
@@ -87,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     controller: _urlController,
                   ),
-                  if (controller.isLoading)
+                  if (homeController.isLoading)
                     const Center(
                       child: CustomProgressIndicator(),
                     ),
@@ -95,30 +108,48 @@ class _HomeScreenState extends State<HomeScreen> {
                   CustomElevatedButton(
                     label: "Send",
                     onPressed: () {
-                      _handleSubmit(controller);
+                      _handleSubmit(homeController);
                     },
                   ),
                 ],
               ),
             ),
           ),
-          Selector<HomeController, bool>(
-            selector: (_, controller) => controller.navigateToNextScreen,
-            builder: (context, navigateToNext, _) {
-              if (navigateToNext) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  controller.resetNavigationFlag();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ProcessScreen(),
-                    ),
-                  );
-                });
-              }
-              return const SizedBox();
-            },
-          ),
+          // ValueListenableBuilder<bool>(
+          //   valueListenable: homeController.navigateToNextScreenNotifier,
+          //   builder: (context, navigateToNext, _) {
+          //     if (navigateToNext) {
+          //       WidgetsBinding.instance.addPostFrameCallback((_) {
+          //         homeController.resetNavigationFlag();
+          //         Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //             builder: (context) => const ProcessScreen(),
+          //           ),
+          //         );
+          //       });
+          //     }
+          //     return const SizedBox();
+          //   },
+          // ),
+
+          // Selector<HomeController, bool>(
+          //   selector: (_, controller) => homeController.navigateToNextScreen,
+          //   builder: (context, navigateToNext, _) {
+          //     if (navigateToNext) {
+          //       WidgetsBinding.instance.addPostFrameCallback((_) {
+          //         homeController.resetNavigationFlag();
+          //         Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //             builder: (context) => const ProcessScreen(),
+          //           ),
+          //         );
+          //       });
+          //     }
+          //     return const SizedBox();
+          //   },
+          // ),
         ],
       ),
     );

@@ -1,25 +1,23 @@
 import 'package:flutter/cupertino.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../core/services/api_service.dart';
 import '../../core/services/data_base_service.dart';
 
 class HomeController extends ChangeNotifier {
-  final ApiService apiService;
-  final DataBaseService dataBaseService;
+  final ApiService apiService = GetIt.instance<ApiService>();
+  final DataBaseService dataBaseService = GetIt.instance<DataBaseService>();
 
   bool isLoading = false;
   String? errorMessage;
   dynamic data;
   bool navigateToNextScreen = false;
 
-  HomeController({
-    required this.apiService,
-    required this.dataBaseService,
-  });
 
   Future<void> createRequest(String url) async {
     await dataBaseService.saveUrlToHive(url);
     await fetchData();
+
   }
 
   Future<void> fetchData() async {

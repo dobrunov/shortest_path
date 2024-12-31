@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../core/models/points_model.dart';
 import '../../core/repository/path_repository.dart';
@@ -6,9 +7,10 @@ import '../../core/services/api_service.dart';
 import '../../core/services/data_base_service.dart';
 
 class ProcessController extends ChangeNotifier {
-  final ApiService apiService;
-  final PathRepository repository;
-  final DataBaseService dataBaseService;
+  final ApiService apiService = GetIt.instance<ApiService>();
+  final DataBaseService dataBaseService = GetIt.instance<DataBaseService>();
+  final PathRepository repository = GetIt.instance<PathRepository>();
+
 
   bool isProcessing = false;
   bool canSendToServer = false;
@@ -18,11 +20,6 @@ class ProcessController extends ChangeNotifier {
   int progress = 0;
   String? errorMessage;
 
-  ProcessController({
-    required this.apiService,
-    required this.repository,
-    required this.dataBaseService,
-  });
 
   void performCalculations() async {
     debugPrint("[Start Calculations]");

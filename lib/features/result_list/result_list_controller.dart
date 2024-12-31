@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 import '../../core/models/grid_model.dart';
 import '../../core/models/path_model.dart';
@@ -6,18 +7,13 @@ import '../../core/repository/path_repository.dart';
 import '../../core/services/data_base_service.dart';
 
 class ResultListController extends ChangeNotifier {
-  final PathRepository repository;
-  final DataBaseService dataBaseService;
+  final DataBaseService dataBaseService = GetIt.instance<DataBaseService>();
+  final PathRepository repository = GetIt.instance<PathRepository>();
 
   bool isLoading = false;
   List<PathData>? pathData;
   List<List<int>>? pathCoordinates;
   Grid? grid;
-
-  ResultListController({
-    required this.repository,
-    required this.dataBaseService,
-  });
 
   void getResultsForScreen() async {
     pathData = await parseSavedShortestPath();

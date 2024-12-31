@@ -1,14 +1,13 @@
 import 'package:flutter/cupertino.dart';
+import 'package:get_it/get_it.dart';
 import 'package:shortest_path/core/services/api_service.dart';
 
 import '../models/grid_model.dart';
 import '../services/data_base_service.dart';
 
 class PathRepository {
-  final DataBaseService dataBaseService;
-  final ApiService apiService;
-
-  PathRepository({required this.dataBaseService, required this.apiService});
+  final ApiService apiService = GetIt.instance<ApiService>();
+  final DataBaseService dataBaseService = GetIt.instance<DataBaseService>();
 
   Future<List<Map<String, dynamic>>> calculateShortestPath() async {
     final pathModel = await dataBaseService.getSavedPathModel();

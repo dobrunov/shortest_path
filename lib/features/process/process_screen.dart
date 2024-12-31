@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/widgets/custom_elevated_button.dart';
@@ -29,7 +30,8 @@ class _ProcessScreenState extends State<ProcessScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<ProcessController>(context);
+    final processController = GetIt.instance<ProcessController>();
+
 
     return Scaffold(
       appBar: AppBar(
@@ -46,17 +48,17 @@ class _ProcessScreenState extends State<ProcessScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    if (controller.errorMessage != null)
+                    if (processController.errorMessage != null)
                       SizedBox(
                         height: 130.0,
                         child: Center(
                           child: Text(
-                            controller.errorMessage ?? "",
+                            processController.errorMessage ?? "",
                             textAlign: TextAlign.center,
                           ),
                         ),
                       ),
-                    if (!controller.isProcessing && controller.canSendToServer && controller.errorMessage == null)
+                    if (!processController.isProcessing && processController.canSendToServer && processController.errorMessage == null)
                       const SizedBox(
                         height: 130.0,
                         child: Center(
@@ -66,21 +68,21 @@ class _ProcessScreenState extends State<ProcessScreen> {
                           ),
                         ),
                       ),
-                    if (controller.isProcessing) const CustomProgressIndicator(),
+                    if (processController.isProcessing) const CustomProgressIndicator(),
                     //
-                    if (controller.showIndicator)
+                    if (processController.showIndicator)
                       Text(
-                        "${controller.progress}%",
+                        "${processController.progress}%",
                         style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                     //
                     const Spacer(),
                     CustomElevatedButton(
                       label: "Send Result to server",
-                      onPressed: controller.isProcessing
+                      onPressed: processController.isProcessing
                           ? null
                           : () {
-                              controller.sendCalculationsToServer();
+                        processController.sendCalculationsToServer();
                             },
                     ),
                   ],

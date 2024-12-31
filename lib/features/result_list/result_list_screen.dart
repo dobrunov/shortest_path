@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:shortest_path/features/result_list/result_list_controller.dart';
 
@@ -16,7 +17,6 @@ class ResultListScreen extends StatefulWidget {
 class _ResultListScreenState extends State<ResultListScreen> {
   List<PathData>? pathData;
   late final String id;
-  late ResultListController resultListController;
   late Grid grid;
 
   @override
@@ -27,14 +27,14 @@ class _ResultListScreenState extends State<ResultListScreen> {
 
   void _getScreenData() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final controller = Provider.of<ResultListController>(context, listen: false);
-      controller.getResultsForScreen();
+      final resultListController = GetIt.instance<ResultListController>();
+      resultListController.getResultsForScreen();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    resultListController = Provider.of<ResultListController>(context);
+    final resultListController = GetIt.instance<ResultListController>();
     pathData = resultListController.pathData;
     if (resultListController.grid != null) {
       grid = resultListController.grid!;

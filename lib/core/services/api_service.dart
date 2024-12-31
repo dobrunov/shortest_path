@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/path_model.dart';
@@ -8,9 +9,7 @@ import '../models/server_response_model.dart';
 import 'data_base_service.dart';
 
 class ApiService {
-  final DataBaseService dataBaseService;
-
-  ApiService({required this.dataBaseService});
+  final DataBaseService dataBaseService = GetIt.instance<DataBaseService>();
 
   Future<PathModel> getData() async {
     final url = await dataBaseService.getSavedUrl();

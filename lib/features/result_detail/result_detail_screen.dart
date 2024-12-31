@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 import '../../core/models/path_model.dart';
@@ -32,21 +33,23 @@ class _ResultDetailScreenState extends State<ResultDetailScreen> {
   }
 
   Future<void> _fetchData() async {
-    final controller = Provider.of<ResultListController>(context, listen: false);
-    await controller.takeGrid(widget.id);
-    controller.getPathCoordinates(widget.id);
+    final resultListController = GetIt.instance<ResultListController>();
+
+    await resultListController.takeGrid(widget.id);
+    resultListController.getPathCoordinates(widget.id);
     setState(() {
-      grid = controller.grid?.grid ?? grid;
-      pathCoordinates = controller.pathCoordinates;
-      pathData = controller.pathData;
+      grid = resultListController.grid?.grid ?? grid;
+      pathCoordinates = resultListController.pathCoordinates;
+      pathData = resultListController.pathData;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<ResultListController>(context);
+    final resultListController = GetIt.instance<ResultListController>();
 
-    if (controller.isLoading) {
+
+    if (resultListController.isLoading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
